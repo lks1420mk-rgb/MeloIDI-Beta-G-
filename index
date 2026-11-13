@@ -86,11 +86,11 @@ main {
   margin:auto;
 }
 
-/* パネル：左側にテーマカラーのアクセントラインを入れて寂しさを解消 */
+/* パネル：左側のアクセントラインを5pxに太くしてより目立たせる */
 .panel {
   background:var(--panel);
   border:1px solid #262626;
-  border-left:3.5px solid var(--accent);
+  border-left:5px solid var(--accent);
   border-radius:12px;
   padding:12px 13px;
   margin:9px 0;
