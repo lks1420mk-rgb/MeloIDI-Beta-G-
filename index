@@ -253,7 +253,6 @@ button.recording {
 
 .white {
   position:relative;
-  width:clamp(40px,11vw,62px);
   height:185px;
   background:#f0f0f0;
   border:1px solid #aaa;
@@ -278,7 +277,6 @@ button.recording {
 .black {
   position:absolute;
   top:0;
-  width:clamp(25px,6.8vw,38px);
   height:112px;
   background:linear-gradient(90deg,#111,#3a3a3a 50%,#111);
   border-radius:0 0 4px 4px;
@@ -327,12 +325,6 @@ footer {
   }
   .keyboard {
     height:170px;
-  }
-  .white {
-    height:170px;
-  }
-  .black {
-    height:102px;
   }
 }
 </style>
@@ -405,8 +397,12 @@ footer {
 
   <section class="panel" style="padding:12px 10px 10px">
     <div class="row" style="padding:0 4px">
-      <span class="label">KEYBOARD</span>
-      <span class="status">横スクロール対応</span>
+      <span class="label">KEYBOARD SIZE</span>
+      <div class="controls" style="gap:4px; flex:none;">
+        <button id="zoomOut" style="padding:4px 9px; font-size:11px;">− 縮小</button>
+        <button id="zoomReset" style="padding:4px 7px; font-size:11px;">標準</button>
+        <button id="zoomIn" style="padding:4px 9px; font-size:11px;">＋ 拡大</button>
+      </div>
     </div>
 
     <div class="keyboard-wrap">
@@ -452,6 +448,7 @@ let audio = null;
 let master = null;
 let echoWet = null;
 let volume = 0.7;
+let zoomScale = 1.0; // 鍵盤の拡大縮小倍率
 
 let soundType = "piano";
 let echoOn = false;
@@ -539,6 +536,20 @@ $("echoToggle").onclick = () => {
     echoWet.gain.setTargetAtTime(echoOn ? 0.32 : 0, audio.currentTime, 0.02);
   }
   updateSoundStatus();
+};
+
+/* 鍵盤の拡大縮小ボタンのイベント設定 */
+$("zoomOut").onclick = () => {
+  zoomScale = Math.max(0.7, zoomScale - 0.15);
+  buildKeyboard();
+};
+$("zoomReset").onclick = () => {
+  zoomScale = 1.0;
+  buildKeyboard();
+};
+$("zoomIn").onclick = () => {
+  zoomScale = Math.min(1.5, zoomScale + 0.15);
+  buildKeyboard();
 };
 
 async function ensureAudio() {
@@ -850,13 +861,16 @@ function buildKeyboard() {
   keyboard.innerHTML = "";
 
   const start = (octave + 1) * 12;
-  const whiteWidth = Math.min(62, Math.max(40, innerWidth * .11));
+  // ズーム倍率を反映した鍵盤幅の計算
+  const baseWidth = Math.min(62, Math.max(40, innerWidth * .11));
+  const whiteWidth = baseWidth * zoomScale;
 
   for (let o = 0; o < 2; o++) {
     for (let i = 0; i < 7; i++) {
       const midi = start + o * 12 + whitePC[i];
       const el = document.createElement("div");
       el.className = "white";
+      el.style.width = whiteWidth + "px";
       el.textContent = i === 0 ? "C" + (octave + o) : "";
       el.dataset.midi = midi;
       keyboard.append(el);
@@ -865,6 +879,7 @@ function buildKeyboard() {
   }
 
   const whitesBefore = {1:1, 3:2, 6:4, 8:5, 10:6};
+  const blackWidth = whiteWidth * 0.62;
 
   for (let o = 0; o < 2; o++) {
     for (const pc of blackPC) {
@@ -872,6 +887,7 @@ function buildKeyboard() {
       const index = o * 7 + whitesBefore[pc];
       const el = document.createElement("div");
       el.className = "black";
+      el.style.width = blackWidth + "px";
       el.style.left = (index * whiteWidth) + "px";
       el.dataset.midi = midi;
       keyboard.append(el);
