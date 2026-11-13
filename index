@@ -23,7 +23,6 @@
   -webkit-user-select:none;
   user-select:none;
   -webkit-touch-callout:none;
-  touch-action:manipulation;
 }
 
 html, body {
@@ -33,9 +32,8 @@ html, body {
   color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
   overflow-x:hidden;
-  width:100%;
   min-height:100svh;
-  overscroll-behavior:none;
+  overscroll-behavior-y: none;
 }
 
 button,select,input {
@@ -212,13 +210,14 @@ button.recording {
   white-space:nowrap;
 }
 
+/* 横スクロールを維持しつつ、余計な拡大や縦移動を防止するキモ */
 .keyboard-wrap {
   margin:10px -4px 0;
   overflow-x:auto;
   overflow-y:hidden;
-  overscroll-behavior:none;
+  overscroll-behavior-x:contain;
   padding:2px 4px 8px;
-  touch-action:none;
+  touch-action: pan-x; /* 横スクロールのみ許可 */
   -webkit-overflow-scrolling:touch;
 }
 
@@ -228,7 +227,7 @@ button.recording {
   display:flex;
   min-width:100%;
   width:max-content;
-  touch-action:none;
+  touch-action: pan-x;
 }
 
 .white {
@@ -246,7 +245,7 @@ button.recording {
   color:#777;
   font-size:10px;
   flex:none;
-  touch-action:none;
+  touch-action: none; /* 鍵盤の上ではスクロールではなく演奏を優先 */
 }
 
 .white.down {
@@ -270,7 +269,7 @@ button.recording {
   align-items:flex-end;
   justify-content:center;
   padding-bottom:8px;
-  touch-action:none;
+  touch-action: none;
 }
 
 .black.down {
@@ -382,7 +381,7 @@ footer {
   <section class="panel" style="padding:12px 9px 10px">
     <div class="row" style="padding:0 5px">
       <span class="label">PIANO KEYBOARD</span>
-      <span class="status">連打・和音完全対応</span>
+      <span class="status">横スクロール対応</span>
     </div>
 
     <div class="keyboard-wrap">
@@ -398,8 +397,7 @@ footer {
   </section>
 
   <footer>
-    MeloIDI · Prototype 0.2<br>
-    SMF (Standard MIDI File) Export Supported
+    MeloIDI · Scrollable &amp; Locked Version
   </footer>
 
 </main>
@@ -407,22 +405,14 @@ footer {
 <script>
 window.addEventListener("contextmenu", e => e.preventDefault());
 
-// ピンチイン・アウトおよび連続タップによるズームを完全にブロック
+// 2本指でのピンチズームをブロック
 document.addEventListener("touchstart", e => {
-  if (e.touches.length > 1) {
-    e.preventDefault();
-  }
+  if (e.touches.length > 1) e.preventDefault();
 }, { passive: false });
 
 document.addEventListener("touchmove", e => {
-  if (e.touches.length > 1) {
-    e.preventDefault();
-  }
+  if (e.touches.length > 1) e.preventDefault();
 }, { passive: false });
-
-document.addEventListener("gesturestart", e => e.preventDefault(), { passive: false });
-document.addEventListener("gesturechange", e => e.preventDefault(), { passive: false });
-document.addEventListener("gestureend", e => e.preventDefault(), { passive: false });
 
 const themes = [
   {id:"DEFAULT",name:"DEFAULT",color:"#777777",tint:"#292929"},
@@ -834,7 +824,7 @@ function buildKeyboard() {
   keyboard.innerHTML = "";
 
   const start = (octave + 1) * 12;
-  const whiteWidth = Math.min(59,Math.max(38,innerWidth * .108));
+  const whiteWidth = Math.min(59, Math.max(38, innerWidth * .108));
 
   for (let o = 0; o < 2; o++) {
     for (let i = 0; i < 7; i++) {
@@ -844,7 +834,7 @@ function buildKeyboard() {
       el.textContent = i === 0 ? "C" + (octave + o) : "";
       el.dataset.midi = midi;
       keyboard.append(el);
-      bindKey(el,midi);
+      bindKey(el, midi);
     }
   }
 
@@ -859,7 +849,7 @@ function buildKeyboard() {
       el.style.left = (index * whiteWidth) + "px";
       el.dataset.midi = midi;
       keyboard.append(el);
-      bindKey(el,midi);
+      bindKey(el, midi);
     }
   }
 
@@ -867,11 +857,6 @@ function buildKeyboard() {
 }
 
 function bindKey(el, midi) {
-  // 鍵盤タッチの瞬間にブラウザのダブルタップ拡大判定を完全に封じる
-  el.addEventListener("touchstart", e => {
-    e.preventDefault();
-  }, { passive: false });
-
   el.addEventListener("pointerdown", e => {
     e.preventDefault();
     try { el.setPointerCapture(e.pointerId); } catch(error) {}
