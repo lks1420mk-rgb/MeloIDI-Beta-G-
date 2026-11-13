@@ -33,7 +33,8 @@ html, body {
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
   overflow-x:hidden;
   min-height:100svh;
-  overscroll-behavior-y: none;
+  overscroll-behavior-y:none;
+  touch-action:manipulation;
 }
 
 button,select,input {
@@ -50,9 +51,9 @@ header {
 }
 
 .logo-area {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
+  display:flex;
+  align-items:baseline;
+  gap:8px;
 }
 
 .logo {
@@ -65,8 +66,8 @@ header {
   font-size:9px;
   letter-spacing:1.5px;
   color:var(--accent);
-  font-weight: 700;
-  transition: color 0.2s;
+  font-weight:700;
+  transition:color 0.2s;
 }
 
 select {
@@ -77,7 +78,7 @@ select {
   color:#fff;
   max-width:160px;
   font-size:11px;
-  outline: none;
+  outline:none;
 }
 
 main {
@@ -86,7 +87,7 @@ main {
   margin:auto;
 }
 
-/* パネル：左側のアクセントラインを5pxに太くしてより目立たせる */
+/* パネル：左側に太めのテーマカラーのアクセントライン */
 .panel {
   background:var(--panel);
   border:1px solid #262626;
@@ -94,8 +95,8 @@ main {
   border-radius:12px;
   padding:12px 13px;
   margin:9px 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  transition: border-left-color 0.2s;
+  box-shadow:0 4px 12px rgba(0,0,0,0.3);
+  transition:border-left-color 0.2s;
 }
 
 .row {
@@ -116,7 +117,7 @@ main {
   font-size:11px;
   color:#888;
   min-height:16px;
-  font-weight: 500;
+  font-weight:500;
 }
 
 button {
@@ -128,7 +129,7 @@ button {
   font-weight:650;
   font-size:12px;
   cursor:pointer;
-  transition: background 0.1s, border-color 0.1s, color 0.1s;
+  transition:background 0.1s, border-color 0.1s, color 0.1s;
 }
 
 button:active {
@@ -228,7 +229,7 @@ button.recording {
 
 .theme.active span:last-child {
   color:#fff;
-  font-weight: 700;
+  font-weight:700;
 }
 
 .keyboard-wrap {
@@ -237,7 +238,7 @@ button.recording {
   overflow-y:hidden;
   overscroll-behavior-x:contain;
   padding:2px 4px 8px;
-  touch-action: pan-x;
+  touch-action:pan-x;
   -webkit-overflow-scrolling:touch;
 }
 
@@ -247,12 +248,12 @@ button.recording {
   display:flex;
   min-width:100%;
   width:max-content;
-  touch-action: pan-x;
+  touch-action:pan-x;
 }
 
 .white {
   position:relative;
-  width:clamp(40px, 11vw, 62px);
+  width:clamp(40px,11vw,62px);
   height:185px;
   background:#f0f0f0;
   border:1px solid #aaa;
@@ -265,7 +266,7 @@ button.recording {
   color:#666;
   font-size:10px;
   flex:none;
-  touch-action: none;
+  touch-action:none;
 }
 
 .white.down {
@@ -277,7 +278,7 @@ button.recording {
 .black {
   position:absolute;
   top:0;
-  width:clamp(25px, 6.8vw, 38px);
+  width:clamp(25px,6.8vw,38px);
   height:112px;
   background:linear-gradient(90deg,#111,#3a3a3a 50%,#111);
   border-radius:0 0 4px 4px;
@@ -290,7 +291,7 @@ button.recording {
   align-items:flex-end;
   justify-content:center;
   padding-bottom:8px;
-  touch-action: none;
+  touch-action:none;
 }
 
 .black.down {
@@ -303,7 +304,7 @@ button.recording {
   width:100%;
   accent-color:var(--accent);
   touch-action:auto;
-  margin-top: 6px;
+  margin-top:6px;
 }
 
 .note {
@@ -421,7 +422,7 @@ footer {
   </section>
 
   <footer>
-    MeloIDI · Mobile Optimized Edition
+    MeloIDI · Complete Mobile Edition
   </footer>
 
 </main>
