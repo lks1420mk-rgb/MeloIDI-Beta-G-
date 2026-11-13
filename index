@@ -35,7 +35,6 @@ html, body {
   overflow-x:hidden;
   width:100%;
   min-height:100svh;
-  /* 画面全体のズーム・バウンスを抑制 */
   overscroll-behavior:none;
 }
 
@@ -383,7 +382,7 @@ footer {
   <section class="panel" style="padding:12px 9px 10px">
     <div class="row" style="padding:0 5px">
       <span class="label">PIANO KEYBOARD</span>
-      <span class="status">和音・連打対応</span>
+      <span class="status">連打・和音完全対応</span>
     </div>
 
     <div class="keyboard-wrap">
@@ -406,26 +405,13 @@ footer {
 </main>
 
 <script>
-// コンテキストメニュー（長押しメニュー）禁止
 window.addEventListener("contextmenu", e => e.preventDefault());
 
-// 2本指以上のピンチズーム＆ダブルタップズームを強制ブロック
-let lastTouchEnd = 0;
+// ピンチイン・アウトおよび連続タップによるズームを完全にブロック
 document.addEventListener("touchstart", e => {
   if (e.touches.length > 1) {
     e.preventDefault();
   }
-}, { passive: false });
-
-document.addEventListener("touchend", e => {
-  const now = Date.now();
-  if (now - lastTouchEnd <= 350) {
-    // 素早い連打時にダブルタップズームが発動するのを防止（フォーム要素以外）
-    if (e.target.tagName !== "INPUT" && e.target.tagName !== "SELECT") {
-      e.preventDefault();
-    }
-  }
-  lastTouchEnd = now;
 }, { passive: false });
 
 document.addEventListener("touchmove", e => {
@@ -880,11 +866,16 @@ function buildKeyboard() {
   keyboard.style.width = (14 * whiteWidth) + "px";
 }
 
-function bindKey(el,midi) {
-  el.addEventListener("pointerdown",e => {
+function bindKey(el, midi) {
+  // 鍵盤タッチの瞬間にブラウザのダブルタップ拡大判定を完全に封じる
+  el.addEventListener("touchstart", e => {
+    e.preventDefault();
+  }, { passive: false });
+
+  el.addEventListener("pointerdown", e => {
     e.preventDefault();
     try { el.setPointerCapture(e.pointerId); } catch(error) {}
-    startNote(e.pointerId,midi,el);
+    startNote(e.pointerId, midi, el);
   });
 
   const end = e => {
@@ -892,9 +883,9 @@ function bindKey(el,midi) {
     stopNote(e.pointerId);
   };
 
-  el.addEventListener("pointerup",end);
-  el.addEventListener("pointercancel",end);
-  el.addEventListener("lostpointercapture",end);
+  el.addEventListener("pointerup", end);
+  el.addEventListener("pointercancel", end);
+  el.addEventListener("lostpointercapture", end);
 }
 
 $("octDown").onclick = () => {
