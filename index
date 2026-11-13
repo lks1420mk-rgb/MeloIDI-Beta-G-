@@ -41,48 +41,61 @@ button,select,input {
 }
 
 header {
-  padding:calc(env(safe-area-inset-top) + 10px) 14px 8px;
+  padding:calc(env(safe-area-inset-top) + 12px) 14px 10px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
+  border-bottom:1px solid #222;
+}
+
+.logo-area {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .logo {
-  font-size:23px;
+  font-size:22px;
   font-weight:800;
-  letter-spacing:-1.2px;
+  letter-spacing:-1px;
 }
 
 .sub {
-  font-size:8px;
-  letter-spacing:2px;
-  color:#888;
-  margin-top:1px;
+  font-size:9px;
+  letter-spacing:1.5px;
+  color:var(--accent);
+  font-weight: 700;
+  transition: color 0.2s;
 }
 
 select {
   border:1px solid #444;
-  border-radius:10px;
-  padding:7px 24px 7px 9px;
-  background:#222;
+  border-radius:8px;
+  padding:6px 24px 6px 10px;
+  background:#1a1a1a;
   color:#fff;
-  max-width:170px;
-  font-size:12px;
+  max-width:160px;
+  font-size:11px;
+  outline: none;
 }
 
 main {
-  padding:0 11px 18px;
+  padding:10px 11px 20px;
   max-width:760px;
   margin:auto;
 }
 
+/* パネル：左側にテーマカラーのアクセントラインを入れて寂しさを解消 */
 .panel {
   background:var(--panel);
-  border:1px solid #292929;
-  border-radius:15px;
-  padding:11px;
-  margin:8px 0;
+  border:1px solid #262626;
+  border-left:3.5px solid var(--accent);
+  border-radius:12px;
+  padding:12px 13px;
+  margin:9px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: border-left-color 0.2s;
 }
 
 .row {
@@ -94,26 +107,28 @@ main {
 
 .label {
   font-size:10px;
-  color:#999;
+  color:#aaa;
   letter-spacing:1px;
   font-weight:700;
 }
 
 .status {
   font-size:11px;
-  color:#aaa;
+  color:#888;
   min-height:16px;
+  font-weight: 500;
 }
 
 button {
-  border:1px solid #383838;
-  border-radius:10px;
+  border:1px solid #333;
+  border-radius:8px;
   padding:8px 10px;
-  background:#292929;
-  color:#eee;
+  background:#222;
+  color:#ddd;
   font-weight:650;
   font-size:12px;
   cursor:pointer;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
 }
 
 button:active {
@@ -121,12 +136,11 @@ button:active {
 }
 
 button:disabled {
-  opacity:0.4;
+  opacity:0.35;
   cursor:not-allowed;
   transform:none;
 }
 
-button.primary,
 button.selected {
   background:var(--accent);
   color:#fff;
@@ -155,13 +169,13 @@ button.recording {
 .octave {
   display:flex;
   align-items:center;
-  gap:7px;
+  gap:6px;
 }
 
 .octave button {
-  font-size:18px;
-  min-width:35px;
-  padding:5px;
+  font-size:16px;
+  min-width:36px;
+  padding:4px;
 }
 
 #octaveLabel {
@@ -169,6 +183,7 @@ button.recording {
   font-weight:750;
   min-width:38px;
   text-align:center;
+  color:#fff;
 }
 
 .theme-grid {
@@ -182,48 +197,53 @@ button.recording {
   display:flex;
   align-items:center;
   gap:6px;
-  padding:7px 6px;
-  border:1px solid #383838;
+  padding:7px 8px;
+  border:1px solid #2e2e2e;
   text-align:left;
   font-size:11px;
   min-width:0;
-  background:#222;
+  background:#1a1a1a;
+  border-radius:8px;
 }
 
 .theme .swatch {
-  width:14px;
-  height:14px;
+  width:12px;
+  height:12px;
   border-radius:50%;
   flex:none;
   background:var(--c);
 }
 
 .theme.active {
-  outline:2px solid var(--accent);
-  border-color:transparent;
-  background:#303030;
+  border-color:var(--accent);
+  background:#262626;
 }
 
 .theme span:last-child {
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
+  color:#ccc;
 }
 
-/* 横スクロールを維持しつつ、余計な拡大や縦移動を防止するキモ */
+.theme.active span:last-child {
+  color:#fff;
+  font-weight: 700;
+}
+
 .keyboard-wrap {
-  margin:10px -4px 0;
+  margin:12px -4px 4px;
   overflow-x:auto;
   overflow-y:hidden;
   overscroll-behavior-x:contain;
   padding:2px 4px 8px;
-  touch-action: pan-x; /* 横スクロールのみ許可 */
+  touch-action: pan-x;
   -webkit-overflow-scrolling:touch;
 }
 
 .keyboard {
   position:relative;
-  height:190px;
+  height:185px;
   display:flex;
   min-width:100%;
   width:max-content;
@@ -232,39 +252,40 @@ button.recording {
 
 .white {
   position:relative;
-  width:clamp(38px,10.8vw,59px);
-  height:190px;
-  background:#f5f5f5;
+  width:clamp(40px, 11vw, 62px);
+  height:185px;
+  background:#f0f0f0;
   border:1px solid #aaa;
-  border-radius:0 0 7px 7px;
+  border-radius:0 0 6px 6px;
   z-index:1;
   display:flex;
   align-items:flex-end;
   justify-content:center;
   padding-bottom:8px;
-  color:#777;
+  color:#666;
   font-size:10px;
   flex:none;
-  touch-action: none; /* 鍵盤の上ではスクロールではなく演奏を優先 */
+  touch-action: none;
 }
 
 .white.down {
   background:var(--tint);
-  box-shadow:inset 0 -5px var(--accent);
+  box-shadow:inset 0 -6px var(--accent);
+  color:#fff;
 }
 
 .black {
   position:absolute;
   top:0;
-  width:clamp(24px,6.6vw,35px);
-  height:118px;
-  background:linear-gradient(90deg,#111,#444 55%,#111);
-  border-radius:0 0 5px 5px;
+  width:clamp(25px, 6.8vw, 38px);
+  height:112px;
+  background:linear-gradient(90deg,#111,#3a3a3a 50%,#111);
+  border-radius:0 0 4px 4px;
   z-index:3;
   transform:translateX(-50%);
-  box-shadow:0 3px 4px #0008;
-  color:#ddd;
-  font-size:9px;
+  box-shadow:0 3px 5px rgba(0,0,0,0.6);
+  color:#bbb;
+  font-size:8px;
   display:flex;
   align-items:flex-end;
   justify-content:center;
@@ -274,26 +295,29 @@ button.recording {
 
 .black.down {
   background:var(--accent);
-  box-shadow:0 3px 4px #0005;
+  box-shadow:0 2px 4px rgba(0,0,0,0.4);
+  color:#fff;
 }
 
 .volume {
   width:100%;
   accent-color:var(--accent);
   touch-action:auto;
+  margin-top: 6px;
 }
 
 .note {
   font-variant-numeric:tabular-nums;
-  font-size:17px;
+  font-size:16px;
   font-weight:750;
 }
 
 footer {
   text-align:center;
-  color:#777;
+  color:#666;
   font-size:9px;
-  padding:7px 0 14px;
+  padding:10px 0 15px;
+  letter-spacing:0.5px;
 }
 
 @media(max-width:390px) {
@@ -301,13 +325,13 @@ footer {
     grid-template-columns:repeat(2,1fr);
   }
   .keyboard {
-    height:175px;
+    height:170px;
   }
   .white {
-    height:175px;
+    height:170px;
   }
   .black {
-    height:108px;
+    height:102px;
   }
 }
 </style>
@@ -316,22 +340,22 @@ footer {
 <body>
 
 <header>
-  <div>
+  <div class="logo-area">
     <div class="logo">MeloIDI</div>
-    <div class="sub">MOBILE PIANO</div>
+    <div class="sub" id="logoSub">MOBILE PIANO</div>
   </div>
-  <select id="themeSelect" aria-label="テーマ"></select>
+  <select id="themeSelect" aria-label="テーマ選択"></select>
 </header>
 
 <main>
 
   <section class="panel">
     <div class="row">
-      <span class="label">PLAYING</span>
-      <span class="status" id="status">タップして演奏</span>
+      <span class="label">PLAYING STATUS</span>
+      <span class="status" id="status">鍵盤をタップして演奏</span>
     </div>
 
-    <div class="row" style="margin-top:9px">
+    <div class="row" style="margin-top:10px">
       <div>
         <div class="label">OCTAVE</div>
         <div class="note" id="octaveLabel">C4</div>
@@ -360,7 +384,7 @@ footer {
   <section class="panel">
     <div class="row">
       <span class="label">RECORDER &amp; MIDI</span>
-      <span class="status" id="recStatus">録音データなし</span>
+      <span class="status" id="recStatus">未録音</span>
     </div>
 
     <div class="controls" style="margin-top:9px">
@@ -378,9 +402,9 @@ footer {
     <div class="theme-grid" id="themeGrid"></div>
   </section>
 
-  <section class="panel" style="padding:12px 9px 10px">
-    <div class="row" style="padding:0 5px">
-      <span class="label">PIANO KEYBOARD</span>
+  <section class="panel" style="padding:12px 10px 10px">
+    <div class="row" style="padding:0 4px">
+      <span class="label">KEYBOARD</span>
       <span class="status">横スクロール対応</span>
     </div>
 
@@ -388,8 +412,8 @@ footer {
       <div class="keyboard" id="keyboard"></div>
     </div>
 
-    <div class="row" style="padding:0 5px; margin-top:6px">
-      <span class="label">MASTER VOLUME</span>
+    <div class="row" style="padding:0 4px; margin-top:8px">
+      <span class="label">VOLUME</span>
       <span class="status" id="volText">70%</span>
     </div>
 
@@ -397,7 +421,7 @@ footer {
   </section>
 
   <footer>
-    MeloIDI · Scrollable &amp; Locked Version
+    MeloIDI · Mobile Optimized Edition
   </footer>
 
 </main>
@@ -405,7 +429,6 @@ footer {
 <script>
 window.addEventListener("contextmenu", e => e.preventDefault());
 
-// 2本指でのピンチズームをブロック
 document.addEventListener("touchstart", e => {
   if (e.touches.length > 1) e.preventDefault();
 }, { passive: false });
@@ -449,6 +472,8 @@ function setTheme(id) {
   document.documentElement.style.setProperty("--accent",t.color);
   document.documentElement.style.setProperty("--tint",t.tint);
   $("themeSelect").value = t.id;
+  $("logoSub").textContent = t.id === "DEFAULT" ? "MOBILE PIANO" : t.name;
+  
   document.querySelector('meta[name="theme-color"]').content = "#000000";
   document.querySelectorAll(".theme").forEach(b => {
     b.classList.toggle("active",b.dataset.id === t.id);
@@ -658,7 +683,7 @@ function stopNote(id, fromPlayback = false) {
     });
   }
 
-  $("status").textContent = active.size ? "演奏中" : "タップして演奏";
+  $("status").textContent = active.size ? "演奏中" : "鍵盤をタップして演奏";
 }
 
 function stopPlayback() {
@@ -696,11 +721,11 @@ $("recBtn").onclick = () => {
 
     const noteCount = recordedEvents.filter(e => e.type === "on").length;
     if (noteCount > 0) {
-      $("recStatus").textContent = `${noteCount}音 録音済み`;
+      $("recStatus").textContent = `${noteCount}音 録音完了`;
       $("playBtn").disabled = false;
       $("midiBtn").disabled = false;
     } else {
-      $("recStatus").textContent = "録音データなし";
+      $("recStatus").textContent = "未録音";
     }
   }
 };
@@ -737,7 +762,7 @@ $("playBtn").onclick = () => {
   const endTimer = setTimeout(() => {
     stopPlayback();
     const noteCount = recordedEvents.filter(e => e.type === "on").length;
-    $("recStatus").textContent = `${noteCount}音 録音済み`;
+    $("recStatus").textContent = `${noteCount}音 録音完了`;
   }, maxTime + 250);
   playbackTimers.push(endTimer);
 };
@@ -812,7 +837,7 @@ $("midiBtn").onclick = () => {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 
-  $("recStatus").textContent = "MIDIファイルを保存しました";
+  $("recStatus").textContent = "MIDI保存完了";
 };
 
 const whitePC = [0,2,4,5,7,9,11];
@@ -824,7 +849,7 @@ function buildKeyboard() {
   keyboard.innerHTML = "";
 
   const start = (octave + 1) * 12;
-  const whiteWidth = Math.min(59, Math.max(38, innerWidth * .108));
+  const whiteWidth = Math.min(62, Math.max(40, innerWidth * .11));
 
   for (let o = 0; o < 2; o++) {
     for (let i = 0; i < 7; i++) {
