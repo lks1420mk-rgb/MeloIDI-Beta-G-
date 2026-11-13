@@ -1,2 +1,923 @@
-# MeloIDI-Beta-G-
-MeloIDI-Beta
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#000000">
+<title>MeloIDI</title>
+
+<style>
+:root {
+  --accent:#777777;
+  --tint:#292929;
+  --ink:#f5f5f5;
+  --panel:#171717;
+  --bg:#000000;
+}
+
+* {
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html {
+  background:#000;
+  overflow-x:hidden;
+  touch-action:pan-y;
+}
+
+body {
+  margin:0;
+  position:relative;
+  min-height:100svh;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  touch-action:pan-y;
+  overflow-x:hidden;
+}
+
+button,select,input {
+  font:inherit;
+}
+
+header {
+  padding:calc(env(safe-area-inset-top) + 10px) 14px 8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.logo {
+  font-size:23px;
+  font-weight:800;
+  letter-spacing:-1.2px;
+}
+
+.sub {
+  font-size:8px;
+  letter-spacing:2px;
+  color:#888;
+  margin-top:1px;
+}
+
+select {
+  border:1px solid #444;
+  border-radius:10px;
+  padding:7px 24px 7px 9px;
+  background:#222;
+  color:#fff;
+  max-width:170px;
+  font-size:12px;
+}
+
+main {
+  padding:0 11px 18px;
+  max-width:760px;
+  margin:auto;
+}
+
+.panel {
+  background:var(--panel);
+  border:1px solid #292929;
+  border-radius:15px;
+  padding:11px;
+  margin:8px 0;
+}
+
+.row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.label {
+  font-size:10px;
+  color:#999;
+  letter-spacing:1px;
+  font-weight:700;
+}
+
+.status {
+  font-size:11px;
+  color:#aaa;
+  min-height:16px;
+}
+
+button {
+  border:1px solid #383838;
+  border-radius:10px;
+  padding:8px 10px;
+  background:#292929;
+  color:#eee;
+  font-weight:650;
+  font-size:12px;
+  cursor:pointer;
+}
+
+button:active {
+  transform:scale(.97);
+}
+
+button:disabled {
+  opacity:0.4;
+  cursor:not-allowed;
+  transform:none;
+}
+
+button.primary,
+button.selected {
+  background:var(--accent);
+  color:#fff;
+  border-color:var(--accent);
+}
+
+button.recording {
+  background:#d94b45;
+  color:#fff;
+  border-color:#d94b45;
+}
+
+.controls {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.controls button {
+  flex:1;
+  min-width:0;
+  white-space:nowrap;
+}
+
+.octave {
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.octave button {
+  font-size:18px;
+  min-width:35px;
+  padding:5px;
+}
+
+#octaveLabel {
+  font-size:13px;
+  font-weight:750;
+  min-width:38px;
+  text-align:center;
+}
+
+.theme-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin-top:8px;
+}
+
+.theme {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 6px;
+  border:1px solid #383838;
+  text-align:left;
+  font-size:11px;
+  min-width:0;
+  background:#222;
+}
+
+.theme .swatch {
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  flex:none;
+  background:var(--c);
+}
+
+.theme.active {
+  outline:2px solid var(--accent);
+  border-color:transparent;
+  background:#303030;
+}
+
+.theme span:last-child {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.keyboard-wrap {
+  margin:10px -4px 0;
+  overflow-x:auto;
+  overflow-y:hidden;
+  overscroll-behavior-x:contain;
+  padding:2px 4px 8px;
+  touch-action:pan-x pan-y;
+  -webkit-overflow-scrolling:touch;
+}
+
+.keyboard {
+  position:relative;
+  height:190px;
+  display:flex;
+  min-width:100%;
+  width:max-content;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.white {
+  position:relative;
+  width:clamp(38px,10.8vw,59px);
+  height:190px;
+  background:#f5f5f5;
+  border:1px solid #aaa;
+  border-radius:0 0 7px 7px;
+  z-index:1;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding-bottom:8px;
+  color:#777;
+  font-size:10px;
+  flex:none;
+}
+
+.white.down {
+  background:var(--tint);
+  box-shadow:inset 0 -5px var(--accent);
+}
+
+.black {
+  position:absolute;
+  top:0;
+  width:clamp(24px,6.6vw,35px);
+  height:118px;
+  background:linear-gradient(90deg,#111,#444 55%,#111);
+  border-radius:0 0 5px 5px;
+  z-index:3;
+  transform:translateX(-50%);
+  box-shadow:0 3px 4px #0008;
+  color:#ddd;
+  font-size:9px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding-bottom:8px;
+}
+
+.black.down {
+  background:var(--accent);
+  box-shadow:0 3px 4px #0005;
+}
+
+.volume {
+  width:100%;
+  accent-color:var(--accent);
+}
+
+.note {
+  font-variant-numeric:tabular-nums;
+  font-size:17px;
+  font-weight:750;
+}
+
+footer {
+  text-align:center;
+  color:#777;
+  font-size:9px;
+  padding:7px 0 14px;
+}
+
+@media(max-width:390px) {
+  .theme-grid {
+    grid-template-columns:repeat(2,1fr);
+  }
+  .keyboard {
+    height:175px;
+  }
+  .white {
+    height:175px;
+  }
+  .black {
+    height:108px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <div class="logo">MeloIDI</div>
+    <div class="sub">MOBILE PIANO</div>
+  </div>
+  <select id="themeSelect" aria-label="テーマ"></select>
+</header>
+
+<main>
+
+  <section class="panel">
+    <div class="row">
+      <span class="label">PLAYING</span>
+      <span class="status" id="status">タップして演奏</span>
+    </div>
+
+    <div class="row" style="margin-top:9px">
+      <div>
+        <div class="label">OCTAVE</div>
+        <div class="note" id="octaveLabel">C4</div>
+      </div>
+
+      <div class="octave">
+        <button id="octDown" aria-label="オクターブを下げる">−</button>
+        <button id="octUp" aria-label="オクターブを上げる">＋</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="row">
+      <span class="label">SOUND &amp; EFFECT</span>
+      <span class="status" id="soundStatus">ピアノ風 · エコー OFF</span>
+    </div>
+
+    <div class="controls" style="margin-top:9px">
+      <button class="selected" id="tonePiano">ピアノ風</button>
+      <button id="toneFamicom">ファミコン風</button>
+      <button id="echoToggle">エコー OFF</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="row">
+      <span class="label">RECORDER &amp; MIDI</span>
+      <span class="status" id="recStatus">録音データなし</span>
+    </div>
+
+    <div class="controls" style="margin-top:9px">
+      <button id="recBtn">● 録音</button>
+      <button id="playBtn" disabled>▶ 再生</button>
+      <button id="midiBtn" disabled>MIDI保存</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="row">
+      <span class="label">THEME COLOR</span>
+      <span class="status">6 PRESETS</span>
+    </div>
+    <div class="theme-grid" id="themeGrid"></div>
+  </section>
+
+  <section class="panel" style="padding:12px 9px 10px">
+    <div class="row" style="padding:0 5px">
+      <span class="label">PIANO KEYBOARD</span>
+      <span class="status">横にスクロールできます</span>
+    </div>
+
+    <div class="keyboard-wrap">
+      <div class="keyboard" id="keyboard"></div>
+    </div>
+
+    <div class="row" style="padding:0 5px; margin-top:6px">
+      <span class="label">MASTER VOLUME</span>
+      <span class="status" id="volText">70%</span>
+    </div>
+
+    <input class="volume" id="volume" type="range" min="0" max="100" value="70">
+  </section>
+
+  <footer>
+    MeloIDI · Prototype 0.2<br>
+    SMF (Standard MIDI File) Export Supported
+  </footer>
+
+</main>
+
+<script>
+const themes = [
+  {id:"DEFAULT",name:"DEFAULT",color:"#777777",tint:"#292929"},
+  {id:"01",name:"初音ミク",color:"#39C5BB",tint:"#17423f"},
+  {id:"02",name:"鏡音リン・レン",color:"#e9bd38",tint:"#493d18"},
+  {id:"03",name:"巡音ルカ",color:"#d995b0",tint:"#49313c"},
+  {id:"00M",name:"MEIKO",color:"#d94b45",tint:"#4a2422"},
+  {id:"00K",name:"KAITO",color:"#3978b9",tint:"#1e3048"}
+];
+
+let octave = 4;
+let audio = null;
+let master = null;
+let echoWet = null;
+let volume = 0.7;
+
+let soundType = "piano"; // "piano" | "famicom"
+let echoOn = false;
+
+let active = new Map();
+let currentTheme = "DEFAULT";
+
+// Recorder state
+let isRecording = false;
+let isPlayingBack = false;
+let recStartTime = 0;
+let recordedEvents = []; // { type: 'on'|'off', midi, time }
+let playbackTimers = [];
+
+const $ = id => document.getElementById(id);
+
+/* Theme */
+function setTheme(id) {
+  const t = themes.find(x => x.id === id) || themes[0];
+  currentTheme = t.id;
+  document.documentElement.style.setProperty("--accent",t.color);
+  document.documentElement.style.setProperty("--tint",t.tint);
+  $("themeSelect").value = t.id;
+  document.querySelector('meta[name="theme-color"]').content = "#000000";
+  document.querySelectorAll(".theme").forEach(b => {
+    b.classList.toggle("active",b.dataset.id === t.id);
+  });
+  try { localStorage.setItem("meloidi-theme",t.id); } catch(e) {}
+}
+
+themes.forEach(t => {
+  const option = document.createElement("option");
+  option.value = t.id;
+  option.textContent = t.id === "DEFAULT" ? "DEFAULT · Monotone" : t.id + " · " + t.name;
+  $("themeSelect").append(option);
+
+  const button = document.createElement("button");
+  button.className = "theme";
+  button.dataset.id = t.id;
+
+  const swatch = document.createElement("span");
+  swatch.className = "swatch";
+  swatch.style.setProperty("--c",t.color);
+
+  const name = document.createElement("span");
+  name.textContent = t.id + " " + t.name;
+
+  button.append(swatch,name);
+  button.onclick = () => setTheme(t.id);
+  $("themeGrid").append(button);
+});
+
+$("themeSelect").onchange = e => setTheme(e.target.value);
+try {
+  setTheme(localStorage.getItem("meloidi-theme") || "DEFAULT");
+} catch(e) {
+  setTheme("DEFAULT");
+}
+
+/* Sound & Effect Controls */
+function updateSoundStatus() {
+  const toneLabel = soundType === "piano" ? "ピアノ風" : "ファミコン風";
+  const echoLabel = echoOn ? "エコー ON" : "エコー OFF";
+  $("soundStatus").textContent = `${toneLabel} · ${echoLabel}`;
+}
+
+$("tonePiano").onclick = () => {
+  soundType = "piano";
+  $("tonePiano").classList.add("selected");
+  $("toneFamicom").classList.remove("selected");
+  updateSoundStatus();
+};
+
+$("toneFamicom").onclick = () => {
+  soundType = "famicom";
+  $("toneFamicom").classList.add("selected");
+  $("tonePiano").classList.remove("selected");
+  updateSoundStatus();
+};
+
+$("echoToggle").onclick = () => {
+  echoOn = !echoOn;
+  $("echoToggle").textContent = echoOn ? "エコー ON" : "エコー OFF";
+  $("echoToggle").classList.toggle("selected", echoOn);
+  if (echoWet && audio) {
+    echoWet.gain.setTargetAtTime(echoOn ? 0.32 : 0, audio.currentTime, 0.02);
+  }
+  updateSoundStatus();
+};
+
+/* Audio Engine */
+async function ensureAudio() {
+  if (!audio) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) {
+      throw new Error("このブラウザは音声再生に対応していません。");
+    }
+    audio = new AudioContextClass();
+
+    master = audio.createGain();
+    master.gain.value = volume;
+
+    // Echo (Delay + Feedback)
+    const delay = audio.createDelay(1.0);
+    delay.delayTime.value = 0.26;
+
+    const feedback = audio.createGain();
+    feedback.gain.value = 0.35;
+
+    echoWet = audio.createGain();
+    echoWet.gain.value = echoOn ? 0.32 : 0;
+
+    delay.connect(feedback);
+    feedback.connect(delay);
+    delay.connect(echoWet);
+    echoWet.connect(audio.destination);
+
+    master.connect(audio.destination);
+    master.connect(delay);
+  }
+
+  if (audio.state === "suspended") {
+    await audio.resume();
+  }
+}
+
+function freq(midi) {
+  return 440 * Math.pow(2,(midi - 69) / 12);
+}
+
+function noteName(m) {
+  return ["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B"][m % 12] + (Math.floor(m / 12) - 1);
+}
+
+async function startNote(id, midi, el, fromPlayback = false) {
+  if (active.has(id)) return;
+
+  if (isRecording && !fromPlayback) {
+    recordedEvents.push({
+      type: "on",
+      midi,
+      time: performance.now() - recStartTime
+    });
+  }
+
+  const record = { oscs: [], gain: null, el, midi };
+  active.set(id, record);
+  if (el) el.classList.add("down");
+
+  try {
+    await ensureAudio();
+    if (active.get(id) !== record) return;
+
+    const now = audio.currentTime;
+    const gain = audio.createGain();
+    gain.connect(master);
+
+    if (soundType === "famicom") {
+      // ファミコン風: 矩形波 + キレのある立ち上がり
+      const osc = audio.createOscillator();
+      osc.type = "square";
+      osc.frequency.value = freq(midi);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.14, now + 0.005);
+
+      osc.connect(gain);
+      osc.start(now);
+      record.oscs.push(osc);
+    } else {
+      // ピアノ風: 基音(三角波) + 2倍音(サイン波) + 自然な減衰
+      const f = freq(midi);
+
+      const osc1 = audio.createOscillator();
+      osc1.type = "triangle";
+      osc1.frequency.value = f;
+
+      const osc2 = audio.createOscillator();
+      osc2.type = "sine";
+      osc2.frequency.value = f * 2;
+
+      const subGain = audio.createGain();
+      subGain.gain.setValueAtTime(0.28, now);
+      subGain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+
+      osc1.connect(gain);
+      osc2.connect(subGain);
+      subGain.connect(gain);
+
+      // アタックからゆっくり減衰するピアノ的エンベロープ
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.32, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.04, now + 1.8);
+
+      osc1.start(now);
+      osc2.start(now);
+      record.oscs.push(osc1, osc2);
+    }
+
+    record.gain = gain;
+    $("status").textContent = "演奏中 · " + noteName(midi);
+
+  } catch(error) {
+    active.delete(id);
+    if (el) el.classList.remove("down");
+    $("status").textContent = "音声を開始できませんでした";
+    console.error(error);
+  }
+}
+
+function stopNote(id, fromPlayback = false) {
+  const n = active.get(id);
+  if (!n) return;
+
+  if (isRecording && !fromPlayback) {
+    recordedEvents.push({
+      type: "off",
+      midi: n.midi,
+      time: performance.now() - recStartTime
+    });
+  }
+
+  active.delete(id);
+  if (n.el) n.el.classList.remove("down");
+
+  if (n.oscs.length && n.gain && audio) {
+    const now = audio.currentTime;
+    const release = soundType === "piano" ? 0.14 : 0.025;
+
+    n.gain.gain.cancelScheduledValues(now);
+    n.gain.gain.setValueAtTime(Math.max(n.gain.gain.value, 0.0001), now);
+    n.gain.gain.exponentialRampToValueAtTime(0.0001, now + release);
+
+    n.oscs.forEach(osc => {
+      try { osc.stop(now + release + 0.02); } catch(e) {}
+    });
+  }
+
+  $("status").textContent = active.size ? "演奏中" : "タップして演奏";
+}
+
+/* Recorder & Playback */
+function stopPlayback() {
+  playbackTimers.forEach(clearTimeout);
+  playbackTimers = [];
+  [...active.keys()].forEach(k => {
+    if (String(k).startsWith("pb-")) stopNote(k, true);
+  });
+  isPlayingBack = false;
+  $("playBtn").textContent = "▶ 再生";
+  $("playBtn").classList.remove("selected");
+}
+
+$("recBtn").onclick = () => {
+  if (isPlayingBack) stopPlayback();
+
+  if (!isRecording) {
+    // 録音開始
+    recordedEvents = [];
+    recStartTime = performance.now();
+    isRecording = true;
+    $("recBtn").textContent = "■ 停止";
+    $("recBtn").classList.add("recording");
+    $("recStatus").textContent = "録音中...";
+    $("playBtn").disabled = true;
+    $("midiBtn").disabled = true;
+  } else {
+    // 録音停止（押しっぱなしの音があれば自動でオフを記録）
+    const endTime = performance.now() - recStartTime;
+    active.forEach(n => {
+      recordedEvents.push({ type: "off", midi: n.midi, time: endTime });
+    });
+
+    isRecording = false;
+    $("recBtn").textContent = "● 録音";
+    $("recBtn").classList.remove("recording");
+
+    const noteCount = recordedEvents.filter(e => e.type === "on").length;
+    if (noteCount > 0) {
+      $("recStatus").textContent = `${noteCount}音 録音済み`;
+      $("playBtn").disabled = false;
+      $("midiBtn").disabled = false;
+    } else {
+      $("recStatus").textContent = "録音データなし";
+    }
+  }
+};
+
+$("playBtn").onclick = () => {
+  if (isPlayingBack) {
+    stopPlayback();
+    $("recStatus").textContent = "再生停止";
+    return;
+  }
+  if (!recordedEvents.length) return;
+
+  isPlayingBack = true;
+  $("playBtn").textContent = "■ 停止";
+  $("playBtn").classList.add("selected");
+  $("recStatus").textContent = "再生中...";
+
+  let maxTime = 0;
+
+  recordedEvents.forEach(ev => {
+    if (ev.time > maxTime) maxTime = ev.time;
+    const timer = setTimeout(() => {
+      const keyEl = document.querySelector(`.keyboard [data-midi="${ev.midi}"]`);
+      const pbId = "pb-" + ev.midi;
+      if (ev.type === "on") {
+        startNote(pbId, ev.midi, keyEl, true);
+      } else {
+        stopNote(pbId, true);
+      }
+    }, ev.time);
+    playbackTimers.push(timer);
+  });
+
+  const endTimer = setTimeout(() => {
+    stopPlayback();
+    const noteCount = recordedEvents.filter(e => e.type === "on").length;
+    $("recStatus").textContent = `${noteCount}音 録音済み`;
+  }, maxTime + 250);
+  playbackTimers.push(endTimer);
+};
+
+/* Standard MIDI File (.mid) Generator */
+function writeVarLen(value) {
+  let buffer = value & 0x7F;
+  const bytes = [];
+  while ((value >>= 7)) {
+    buffer <<= 8;
+    buffer |= ((value & 0x7F) | 0x80);
+  }
+  while (true) {
+    bytes.push(buffer & 0xFF);
+    if (buffer & 0x80) buffer >>= 8;
+    else break;
+  }
+  return bytes;
+}
+
+$("midiBtn").onclick = () => {
+  if (!recordedEvents.length) return;
+
+  // テンポ設定: 120 BPM (1拍 = 500ms), 分解能 TPQN = 480 -> 1ms = 0.96 ticks
+  const ticksPerMs = 480 / 500;
+  const sorted = [...recordedEvents].sort((a, b) => a.time - b.time);
+
+  const trackBytes = [];
+  // テンポメタイベント (500,000 microseconds per quarter note = 120 BPM)
+  trackBytes.push(0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20);
+
+  let lastTick = 0;
+  sorted.forEach(ev => {
+    const currentTick = Math.round(ev.time * ticksPerMs);
+    const delta = Math.max(0, currentTick - lastTick);
+    lastTick = currentTick;
+
+    trackBytes.push(...writeVarLen(delta));
+    if (ev.type === "on") {
+      trackBytes.push(0x90, ev.midi & 0x7F, 0x64); // Note On, velocity 100
+    } else {
+      trackBytes.push(0x80, ev.midi & 0x7F, 0x00); // Note Off
+    }
+  });
+
+  // End of Track
+  trackBytes.push(0x00, 0xFF, 0x2F, 0x00);
+
+  const header = [
+    0x4D, 0x54, 0x68, 0x64, // "MThd"
+    0x00, 0x00, 0x00, 0x06, // Header length = 6
+    0x00, 0x00,             // Format 0
+    0x00, 0x01,             // 1 Track
+    0x01, 0xE0              // 480 ticks per quarter note
+  ];
+
+  const len = trackBytes.length;
+  const trackHeader = [
+    0x4D, 0x54, 0x72, 0x6B, // "MTrk"
+    (len >> 24) & 0xFF,
+    (len >> 16) & 0xFF,
+    (len >> 8) & 0xFF,
+    len & 0xFF
+  ];
+
+  const midiFile = new Uint8Array([...header, ...trackHeader, ...trackBytes]);
+  const blob = new Blob([midiFile], { type: "audio/midi" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  const timestamp = new Date().toISOString().slice(0,19).replace(/[-:T]/g,"");
+  a.href = url;
+  a.download = `MeloIDI_${timestamp}.mid`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  $("recStatus").textContent = "MIDIファイルを保存しました";
+};
+
+/* Keyboard */
+const whitePC = [0,2,4,5,7,9,11];
+const blackPC = [1,3,6,8,10];
+
+function buildKeyboard() {
+  const keyboard = $("keyboard");
+  [...active.keys()].forEach(id => stopNote(id, true));
+  keyboard.innerHTML = "";
+
+  const start = (octave + 1) * 12;
+  const whiteWidth = Math.min(59,Math.max(38,innerWidth * .108));
+
+  for (let o = 0; o < 2; o++) {
+    for (let i = 0; i < 7; i++) {
+      const midi = start + o * 12 + whitePC[i];
+      const el = document.createElement("div");
+      el.className = "white";
+      el.textContent = i === 0 ? "C" + (octave + o) : "";
+      el.dataset.midi = midi;
+      keyboard.append(el);
+      bindKey(el,midi);
+    }
+  }
+
+  const whitesBefore = {1:1, 3:2, 6:4, 8:5, 10:6};
+
+  for (let o = 0; o < 2; o++) {
+    for (const pc of blackPC) {
+      const midi = start + o * 12 + pc;
+      const index = o * 7 + whitesBefore[pc];
+      const el = document.createElement("div");
+      el.className = "black";
+      el.style.left = (index * whiteWidth) + "px";
+      el.dataset.midi = midi;
+      keyboard.append(el);
+      bindKey(el,midi);
+    }
+  }
+
+  keyboard.style.width = (14 * whiteWidth) + "px";
+}
+
+function bindKey(el,midi) {
+  el.addEventListener("pointerdown",e => {
+    e.preventDefault();
+    try { el.setPointerCapture(e.pointerId); } catch(error) {}
+    startNote(e.pointerId,midi,el);
+  });
+
+  const end = e => {
+    e.preventDefault();
+    stopNote(e.pointerId);
+  };
+
+  el.addEventListener("pointerup",end);
+  el.addEventListener("pointercancel",end);
+  el.addEventListener("lostpointercapture",end);
+}
+
+/* Octave */
+$("octDown").onclick = () => {
+  if (octave > 1) { octave--; updateOctave(); }
+};
+$("octUp").onclick = () => {
+  if (octave < 7) { octave++; updateOctave(); }
+};
+function updateOctave() {
+  $("octaveLabel").textContent = "C" + octave;
+  buildKeyboard();
+}
+
+/* Volume */
+$("volume").oninput = e => {
+  volume = Number(e.target.value) / 100;
+  $("volText").textContent = e.target.value + "%";
+  if (master && audio) {
+    master.gain.setTargetAtTime(volume, audio.currentTime, .02);
+  }
+};
+
+/* Initialization */
+buildKeyboard();
+window.addEventListener("resize", buildKeyboard);
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    if (isPlayingBack) stopPlayback();
+    [...active.keys()].forEach(id => stopNote(id));
+  }
+});
+
+/* iPhone pinch zoom prevention */
+document.addEventListener("gesturestart", e => e.preventDefault(), {passive:false});
+document.addEventListener("gesturechange", e => e.preventDefault(), {passive:false});
+document.addEventListener("gestureend", e => e.preventDefault(), {passive:false});
+document.addEventListener("touchmove", e => {
+  if (e.touches.length > 1) e.preventDefault();
+}, {passive:false});
+</script>
+</body>
+</html>
